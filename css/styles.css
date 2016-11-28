@@ -1,0 +1,436 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* ************************************************************ */
+
+body {
+    font: 24px Helvetica;
+    background: #212830;
+}
+
+.wrapper{
+    position: relative;
+    top: 125px;
+}
+
+.arriba{
+    position: fixed;
+    top:0;
+    z-index: 90000;
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    height: 125px;
+    background-color: #212830;
+}
+
+/* **************** BUSCADOR ****************** */
+
+#searchform {
+    width: 600px;
+    height:30px;
+    padding: 8px;
+    margin: -60px 50px 50px 350px;
+    background: #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.4) inset, 0 2px 0 rgba(255,255,255,.5);
+}
+
+#searchform input {
+    width: 500px;
+    height:20px;
+    padding: 5px;
+    float: left;
+    border: 0;
+    background: #eee;
+    border-radius: 3px 0 0 3px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.4) inset;
+}
+
+#searchform input:focus {
+    outline: 0;
+    height:21px;
+    background: #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,.8) inset;
+}
+
+#searchform input:-webkit-input-placeholder {
+    color: #999;
+    font-weight: normal;
+    font-style: italic;
+}
+
+#searchform input:-moz-placeholder {
+    color: #999;
+    font-weight: normal;
+    font-style: italic;
+}
+
+#searchform input:-ms-input-placeholder {
+    color: #999;
+    font-weight: normal;
+    font-style: italic;
+}
+
+#searchform button {
+    position: relative;
+    float: right;
+    border: 0;
+    cursor: pointer;
+    height: 30px;
+    width: 80px;
+    font-size:15px;
+    color: #fff;
+    background: #438cdb;
+    border-radius: 0 3px 3px 0;
+    text-shadow: 0 -1px 0 rgba(0, 0 ,0, .3);
+}
+
+#searchform button:hover{
+    background: #2672e0;
+}
+
+#searchform button:active,
+#searchform button:focus{
+    background: #2672e0;
+}
+
+#searchform button:before { /* flecha */
+    content: '';
+    position: absolute;
+    border-width: 8px 8px 8px 0;
+    border-style: solid solid solid none;
+    border-color: transparent #438cdb transparent;
+    top: 8px;
+    left: -5px;
+}
+
+#searchform button:hover:before{
+    border-right-color: #2672e0;
+}
+
+#searchform button:focus:before{
+    border-right-color: #2672e0;
+}
+
+/* ************************************************************ */
+
+.menu {
+    display: flex;
+}
+
+.menu-item {
+    background: #212830;
+    color: white;
+    font-family: Calibri;
+    font-size: small;
+    font-weight: bold;
+    height: 100%;
+    width: 100%;
+    padding: 13px;
+    text-align: center;
+    border-bottom: 1px solid white;
+}
+
+.menu-item:hover{
+    background-color: #DDE354;
+}
+
+/* *********** SLIDER *********** */
+
+@-webkit-keyframes css-slider {
+    7%{opacity: 1;} /* This is where slide becomes visible, duration 10 % of 20 sec */
+    17%{opacity: 1;} /* Still visible, little more then middle point (100 % / 5 slides) */
+    30%{opacity: 0;} /* Now its hidden, when next slide is fully visible */
+}
+
+.css-slider{
+    position: relative; /* All slides will have absolute position */
+    width: 100%; /* Make it responsive */
+    /*width: 1043px;*/
+    padding: 0;
+    margin: 0;
+    padding-bottom: 75%; /* Height will be 75% from width */
+    list-style-type: none;
+    overflow: hidden; /* In case images will have wrong aspect ratio */
+}
+
+.css-slider li img{
+    width: 100%; /* And make images responsive as well */
+}
+
+.css-slider li{
+    position: absolute; top:0; right: 0; bottom: 0; left: 0; /* Make it fill whole slider container */
+    opacity: 0; /* Hide it */
+    -webkit-animation: css-slider 24s infinite; /* Use keyframe animation from above */
+}
+.css-slider li:nth-child(1){-webkit-animation-delay: 0s;}
+.css-slider li:nth-child(2){-webkit-animation-delay: 4s;}
+.css-slider li:nth-child(3){-webkit-animation-delay: 8s;}
+.css-slider li:nth-child(4){-webkit-animation-delay: 12s;}
+.css-slider li:nth-child(5){-webkit-animation-delay: 16s;}
+.css-slider li:nth-child(6){-webkit-animation-delay: 20s;}
+
+/* ************************************************************ */
+
+.anuncios {
+    display: flex;
+}
+
+/* LATERAL */
+
+.lateral li img{
+    width: 320px;
+    height: 91px;
+    margin-bottom: -6px;
+}
+
+/* ************************************************************ */
+
+.articulos{
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 20px;
+}
+
+.articulo-item{
+    flex-flow: column;
+    color: black;
+    padding: 10px;
+    border: 1px solid #EFEFEF;
+    display: flex;
+    justify-content: space-between;
+}
+
+.articulo-item img{
+
+}
+
+.titulo-articulos{
+    margin-left: 18px;
+    margin-bottom: 5px;
+}
+
+.nombre{
+    color: #2f2f2f;
+    font-size: small;
+    width: 250px;
+}
+
+.precio{
+    color: #1fa7e2;
+}
+
+.btn{
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.btn-carro {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background: #394049;
+    padding: 10px 60px 10px 60px;
+    color: #ffffff;
+    font-size: 16px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: normal;
+    text-align: center;
+}
+
+.btn-carro:hover {
+    background: #00a1e1;
+    text-decoration: none;
+}
+
+/* ************************************************************ */
+#main {
+    margin: 0px;
+    padding: 0px;
+    display: -webkit-flex;
+    display:         flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+    background-color: white;
+}
+
+#main > article {
+    padding: 5px;
+    background: #FFFFFF;
+    -webkit-flex: 3 1 60%;
+    flex: 3 1 60%;
+    -webkit-order: 2;
+    order: 2;
+    background: url("../images/blackfriday_bg.jpg") no-repeat scroll top center;
+    width: 100%;
+
+    /* BORJA: MODIFICAR ESTO */
+    padding-left: 100px;
+    padding-right: 100px;
+
+    color: #DDE354;
+    font-weight: bold;
+    font-family: Calibri;
+}
+
+#main > nav {
+    padding: 5px;
+    background: #ccccff;
+    -webkit-flex: 1 6 20%;
+    flex: 1 6 20%;
+    -webkit-order: 1;
+    order: 1;
+}
+
+header {
+    display: block;
+    padding: 5px;
+    min-height: 70px;
+    background: #212830;
+    border-bottom: 1px solid #38424E;
+    margin-bottom: 1px;
+}
+
+footer {
+    display: flex;
+    background: #2F2F2F;
+    border-top: 1px solid #DDE354;
+    justify-content: space-around;
+}
+
+.footer-item {
+    color: #DDE354;
+    font-family: Calibri;
+    font-size: small;
+    font-weight: bold;
+    height: 100%;
+    margin: 2px 15px;
+    padding: 10px;
+
+}
+
+.footer-img{
+    margin-left: 20px;
+    width: 50px;
+    height: 50px;
+}
+
+.footer-item-title{
+    text-transform: uppercase;
+}
+
+.footer-item ul{
+    margin-top: 10px;
+}
+
+.footer-item li{
+    color: #9f9f9f;
+    list-style-type: square;
+    margin-left: 12px;
+}
+
+.logo{
+    margin-left: 40px;
+}
+
+/* ************************************************************ */
+
+/* Custom, iPhone Retina */
+@media only screen and (min-width : 320px) {
+
+}
+
+/* Too narrow to support three columns */
+/*
+@media all and (max-width: 640px) {
+
+    #main, #page {
+        -webkit-flex-flow: column;
+        flex-flow: column;
+    }
+
+    #main > article, #main > nav, #main > aside {
+        -webkit-order: 0;
+        order: 0;
+    }
+
+    #main > nav, #main > aside, header, footer {
+        min-height: 50px;
+        max-height: 50px;
+    }
+
+    .logo{
+        width: 160px;
+        height: 30px;
+    }
+}
+*/
+
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+
+}
+
