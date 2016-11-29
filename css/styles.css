@@ -240,6 +240,15 @@ body {
 
 /* ************************************************************ */
 
+.anchor{
+    display: block;
+    height: 115px; /*same height as header*/
+    margin-top: -115px; /*same height as header*/
+    visibility: hidden;
+}
+
+/* ************************************************************ */
+
 .articulos{
     display: flex;
     flex-wrap: wrap;
@@ -468,6 +477,31 @@ footer {
 
 .logo{
     margin-left: 40px;
+}
+
+/* ************************************************************ */
+
+.mini-footer{
+    background-color: white;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: gray;
+    font-size: medium;
+}
+
+.mini-footer a{
+    float: right;
+}
+
+.mini-footer img{
+    background-color: #0094D5;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius: 4px;
 }
 
 /* ************************************************************ */

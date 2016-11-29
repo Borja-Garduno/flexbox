@@ -12,6 +12,7 @@
     </head>
 
     <body>
+        <span class="anchor" id="subir"></span>
         <div class="wrapper">
             <div class="arriba">
                 <header>
@@ -52,8 +53,10 @@
 
             <div id='main'>
                 <article>
-                    <div id="novedades"></div>
+                    <span class="anchor" id="novedades"></span>
                     <div class="titulo-articulos">Novedades Wipoid</div>
+
+                    <input type="text" name="busqueda" id="busqueda" placeholder="Introduzca nombre a buscar" />
 
                     <div class="articulos">
                         <div class="articulo-item">
@@ -101,7 +104,7 @@
                         </div>
                     </div>
 
-                    <div id="ofertas"></div>
+                    <span class="anchor" id="ofertas"></span>
                     <div class="titulo-articulos">Ofertas</div>
 
                     <div class="articulos">
@@ -195,7 +198,7 @@
                     </div>
 
 
-                    <div id="localizacion"></div>
+                    <span class="anchor" id="localizacion"></span>
                     <div class="titulo-articulos">Localizacion</div>
 
                     <div class="localizacion">
@@ -232,7 +235,7 @@
                         </div>
                     </div>
 
-                    <div id="contacto"></div>
+                    <span class="anchor" id="contacto"></span>
                     <div class="titulo-articulos">Contacto</div>
 
                     <form class="contacto">
@@ -287,6 +290,16 @@
                 </div>
 
             </footer>
+
+            <div class="mini-footer">
+                Pagina clonada a Wipoid.com
+                <a href="#subir">
+                    <img src="images/arriba.png" width="20px" alt="" />
+                </a>
+            </div>
         </div>
+
+        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="js/min.js"></script>
     </body>
 </html>
