@@ -173,13 +173,20 @@ body {
     font-weight: bold;
     height: 100%;
     width: 100%;
-    padding: 13px;
     text-align: center;
     border-bottom: 1px solid white;
+    text-transform: uppercase;
 }
 
 .menu-item:hover{
     background-color: #DDE354;
+}
+
+.menu-item a{
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 13px;
 }
 
 /* *********** SLIDER *********** */
@@ -255,6 +262,7 @@ body {
 .titulo-articulos{
     margin-left: 18px;
     margin-bottom: 5px;
+    margin-top: 10px;
 }
 
 .nombre{
@@ -289,6 +297,87 @@ body {
 .btn-carro:hover {
     background: #00a1e1;
     text-decoration: none;
+}
+
+/* ************************************************************ */
+
+.localizacion{
+    font-family: Calibri;
+    color: #2f2f2f;
+    font-size: medium;
+    display: flex;
+}
+
+.localizacion iframe{
+    flex-basis: 1000px;
+    width: 600px;
+    height: 340px;
+    margin-left: 20px;
+}
+
+.localizacion  .titulo-localizacion{
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.localizacion .contenido-localizacion{
+    margin-left: 15px;
+    font-weight: lighter;
+}
+
+.localizacion p{
+    text-align: justify;
+    margin-bottom: 15px;
+}
+
+/* ************************************************************ */
+
+.contacto{
+    border: 1px solid #CED5D7;
+    padding: 45px 45px 20px;
+    margin-top: 15px;
+    margin-left: 20px;
+    background-color: white;
+    box-shadow: 0px 0px 0px #B5C1C5, 0 0 0 10px #EEF5F7 inset;
+    width: 310px;
+}
+
+.contacto label{
+    display: block; /* esto es para que el label se sobreponga a la caja de texto */
+    font-weight: bold;
+    color: black;
+}
+.contacto div{
+    margin-bottom: 15px; /* esto los separara un poco */
+}
+
+.contacto input[type='text'], .contacto textarea{
+    padding: 7px 6px;
+    width: 294px; /* una longitud definida */
+    border: 1px solid #CED5D7;
+    resize: none; /* esta propiedad es para que el textarea no sea redimensionable */
+    box-shadow:0 0 0 3px #EEF5F7;
+    margin: 5px 0;
+}
+.contacto input[type='text']:focus, .contacto textarea:focus{
+    outline: none; /* reset especifico para Chrome/Safari */
+    box-shadow:0 0 0 3px #dde9ec;
+}
+
+.contacto input[type='submit']{
+    border: 1px solid #CED5D7;
+    box-shadow:0 0 0 3px #EEF5F7;
+    padding: 8px 16px;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px white;
+
+    background: #e4f1f6; /* fallback para navegadores que no soporten degradados */
+}
+.contacto input[type='submit']:hover{
+    background: #edfcff;
+}
+.contacto input[type='submit']:active{
+    background: #cfe6ef;
 }
 
 /* ************************************************************ */
