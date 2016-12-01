@@ -506,6 +506,23 @@ footer {
 
 /* ************************************************************ */
 
+.tabla-alumnos table, th, td {
+    border: 1px solid black;
+    font-size: medium;
+    color: black;
+}
+
+.tabla-alumnos th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.tabla-alumnos tr:nth-child(even) {
+    background-color: #f2f2f2
+}
+
+/* ************************************************************ */
+
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
 
