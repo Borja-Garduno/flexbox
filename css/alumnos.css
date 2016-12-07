@@ -1,0 +1,21 @@
+.tabla-alumnos table, th, td {
+    /*border: 1px solid black;*/
+    font-size: medium;
+    color: black;
+    padding: 10px;
+}
+
+.tabla-alumnos th {
+    background-color: #4CAF50;
+    color: white;
+
+}
+
+.tabla-alumnos tr:nth-child(even) {
+    background-color: #f2f2f2
+}
+
+.tabla-alumnos tfoot td{
+    background-color: #4CAF50;
+    color: white;
+}
