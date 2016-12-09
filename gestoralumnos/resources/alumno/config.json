@@ -1,0 +1,37 @@
+{
+	"type": "Collection",
+	"properties": {
+		"dni": {
+			"name": "dni",
+			"type": "string",
+			"typeLabel": "string",
+			"required": true,
+			"id": "dni",
+			"order": 0
+		},
+		"nombre": {
+			"name": "nombre",
+			"type": "string",
+			"typeLabel": "string",
+			"required": true,
+			"id": "nombre",
+			"order": 1
+		},
+		"apellidos": {
+			"name": "apellidos",
+			"type": "string",
+			"typeLabel": "string",
+			"required": true,
+			"id": "apellidos",
+			"order": 2
+		},
+		"notas": {
+			"name": "notas",
+			"type": "array",
+			"typeLabel": "array",
+			"required": false,
+			"id": "notas",
+			"order": 3
+		}
+	}
+}
