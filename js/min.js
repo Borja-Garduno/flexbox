@@ -1,6 +1,7 @@
 
 $.noConflict();
 
+/*
 var dnies = ["16068603K", "56478952H", "87654321B", "15978561C", "74125831N", "95162626L"];
 
 var nombres = new Array();
@@ -66,16 +67,88 @@ nUF1846['87654321B'] = 5;
 nUF1846['15978561C'] = 3;
 nUF1846['74125831N'] = 8;
 nUF1846['95162626L'] = 5;
-
+*/
 
 jQuery(document).ready(function ($) {
 
     $("#listado-alumnos thead input").prop("checked", false);
 
+    var numAlumnos = 0;
+
+    var promesaCarga = $.ajax('http://localhost:2403/alumno', {type: "GET"});
+    promesaCarga.success(function(data) {
+        numAlumnos = data.length;
+
+        for(var i=0; i<data.length; i++){
+            var id = data[i].id;
+            var dni = data[i].dni;
+            var nombre =  data[i].nombre;
+            var apellidos = data[i].apellidos;
+            var notas = new Array();
+
+            if(data[i].notas != undefined){
+                notas['UF1841'] = data[i].notas.UF1841;
+                notas['UF1842'] = data[i].notas.UF1842;
+                notas['UF1843'] = data[i].notas.UF1843;
+                notas['UF1844'] = data[i].notas.UF1844;
+                notas['UF1845'] = data[i].notas.UF1845;
+                notas['UF1846'] = data[i].notas.UF1846;
+            } else{
+                notas['UF1841'] = 0;
+                notas['UF1842'] = 0;
+                notas['UF1843'] = 0;
+                notas['UF1844'] = 0;
+                notas['UF1845'] = 0;
+                notas['UF1846'] = 0;
+            }
+
+            insertarAlumnoVista(id, dni, nombre, apellidos, notas);
+            totalNumeroAlumnos();
+        }
+    });
+
+    function insertarAlumnoBDA(dni, nombre, apellidos, notas) {
+        var promesaAgregar = $.ajax('http://localhost:2403/alumno', {
+            type: "POST",
+            data: {
+                dni: dni,
+                nombre: nombre,
+                apellidos: apellidos,
+                notas: notas
+            },
+
+            success: function(todo) {
+                //alert("Alumno insertado correctamente.");
+            },
+            error: function(xhr) {
+                alert("Error: " + xhr.responseText);
+            }
+        });
+    }
+
+    function insertarAlumnoVista(id, dni, nombre, apellidos, notas) {
+        var html_text = "<tr>" +
+                "<td align='center'><input id='idCheck' type='checkbox' value='" + id + "'/></td>" +
+                "<td>" + dni + "</td>" +
+                "<td>" + nombre + "</td>" +
+                "<td>" + apellidos + "</td>" +
+                "<td>" + notas['UF1841'] + "</td>" +
+                "<td>" + notas['UF1842'] + "</td>" +
+                "<td>" + notas['UF1843'] + "</td>" +
+                "<td>" + notas['UF1844'] + "</td>" +
+                "<td>" + notas['UF1845'] + "</td>" +
+                "<td>" + notas['UF1846'] + "</td>" +//GET ByID (dni)-->
+                "<td>" + calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]).toFixed(2) + "</td>" +
+                "<td><button class='btn btn-info' value='"+dni+"'>Editar</button></td>" +
+            "</tr>";
+
+        $('#listado-alumnos tbody').append(html_text);
+    }
+
     function totalNumeroAlumnos() {
         //$("#alumnos div span.totalAlumnos").text("Total Alumnos: " + dnies.length);
         //$("#alumnos div span:eq(0)").append(" " + dnies.length);
-        $("#alumnos div span:eq(0)").text("Total Alumnos: " + dnies.length);
+        $("#alumnos div span:eq(0)").text("Total Alumnos: " + numAlumnos);
     }
 
     function calcularMedia(numeros) {
@@ -90,6 +163,7 @@ jQuery(document).ready(function ($) {
         return media;
     }
 
+    /*
     function cargarAlumnos() {
         for(var i=0; i<dnies.length; i++){
             var dni = dnies[i];
@@ -117,17 +191,18 @@ jQuery(document).ready(function ($) {
             $("#listado-alumnos tbody").append(html_text);
         }
     }
+    */
 
     function mediaAlumnos() {
         var mediaAlumnos = Array();
-
-        for(var i=0; i<dnies.length; i++){
-            var dni = dnies[i];
-            var notaMedia = calcularMedia(nUF1841[dni], nUF1842[dni], nUF1843[dni], nUF1844[dni], nUF1845[dni], nUF1846[dni]);
-            mediaAlumnos.push(parseInt(notaMedia));
-        }
-
-        //var alumnoNota = $("#myModal #nUF1841").val();
+        /*
+        mediaAlumnos.push(notas['UF1841']);
+        mediaAlumnos.push(notas['UF1842']);
+        mediaAlumnos.push(notas['UF1843']);
+        mediaAlumnos.push(notas['UF1844']);
+        mediaAlumnos.push(notas['UF1845']);
+        mediaAlumnos.push(notas['UF1846']);
+        */
 
         var nota = calcularMedia(mediaAlumnos);
 
@@ -166,6 +241,7 @@ jQuery(document).ready(function ($) {
 
         var valido = true;
 
+        var id = $("#listado-alumnos tbody #idCheck").val();
         var dni = $("#myModal #dni").val();
         var nombre = $("#myModal #nombre").val();
         var apellidos = $("#myModal #apellidos").val();
@@ -186,8 +262,8 @@ jQuery(document).ready(function ($) {
             valido=false;
         }
 
-        if(!validarTexto(apellidos, 7)){
-            alert("Atencion! Apellido no valido. Longitud minima 7.");
+        if(!validarTexto(apellidos, 4)){
+            alert("Atencion! Apellido no valido. Longitud minima 4.");
             valido=false;
         }
 
@@ -222,14 +298,35 @@ jQuery(document).ready(function ($) {
         }
 
         if(valido){
-            agregarAlumno(dni, nombre, apellidos, UF1841, UF1842, UF1843, UF1844,  UF1845, UF1846);
+            var notasVista = new Array();
+            notasVista['UF1841'] = UF1841;
+            notasVista['UF1842'] = UF1842;
+            notasVista['UF1843'] = UF1843;
+            notasVista['UF1844'] = UF1844;
+            notasVista['UF1845'] = UF1845;
+            notasVista['UF1846'] = UF1846;
 
-            var notas = [parseInt(UF1841), parseInt(UF1842), parseInt(UF1843), parseInt(UF1844), parseInt(UF1845), parseInt(UF1846)];
-            var notaMedia = calcularMedia(notas).toFixed(2);
+            var notasBDA = {
+                UF1841: UF1841,
+                UF1842: UF1842,
+                UF1843: UF1843,
+                UF1844: UF1844,
+                UF1845: UF1845,
+                UF1846: UF1846
+            };
+
+            insertarAlumnoBDA(dni, nombre, apellidos, notasBDA);
+            insertarAlumnoVista(id, dni, nombre, apellidos, notasVista);
+
+            //agregarAlumno(dni, nombre, apellidos, UF1841, UF1842, UF1843, UF1844,  UF1845, UF1846);
+
+            //var notas = [parseInt(notas['UF1841']), parseInt(UF1842), parseInt(UF1843), parseInt(UF1844), parseInt(UF1845), parseInt(UF1846)];
+            //var notaMedia = calcularMedia(notas).toFixed(2);
 
             $('#myModal').modal('hide');
 
 
+            /*
             $("#listado-alumnos").find("tbody")
                 .append($("<tr>")
                     .append($("<td>")
@@ -249,31 +346,31 @@ jQuery(document).ready(function ($) {
                     )
 
                     .append($("<td>")
-                        .append($("<span>"+UF1841+"</span>"))
+                        .append($("<span>"+notas['UF1841']+"</span>"))
                     )
 
                     .append($("<td>")
-                        .append($("<span>"+UF1842+"</span>"))
+                        .append($("<span>"+notas['UF1841']+"</span>"))
                     )
 
                     .append($("<td>")
-                        .append($("<span>"+UF1843+"</span>"))
+                        .append($("<span>"+notas['UF1841']+"</span>"))
                     )
 
                     .append($("<td>")
-                        .append($("<span>"+UF1844+"</span>"))
+                        .append($("<span>"+notas['UF1841']+"</span>"))
                     )
 
                     .append($("<td>")
-                        .append($("<span>"+UF1845+"</span>"))
+                        .append($("<span>"+notas['UF1841']+"</span>"))
                     )
 
                     .append($("<td>")
-                        .append($("<span>"+UF1846+"</span>"))
+                        .append($("<span>"+notas['UF1841']+"</span>"))
                     )
 
                     .append($("<td>")
-                        .append($("<span>"+notaMedia+"</span>"))
+                        .append($("<span>"+notas['UF1841']+"</span>"))
                     )
 
                     .append($("<td>")
@@ -281,6 +378,7 @@ jQuery(document).ready(function ($) {
                     )
 
                 );
+                */
         }
 
         totalNumeroAlumnos();
@@ -364,44 +462,8 @@ jQuery(document).ready(function ($) {
 
         return valido;
     }
-    
-    function agregarAlumno(dni, nombre, apellido, UF1841, UF1842, UF1843, UF1844,  UF1845, UF1846) {
-        dnies.push(dni);
-        nombres[dni] = nombre;
-        apellidos[dni] = apellido;
-        nUF1841[dni] = parseInt(UF1841,10);
-        nUF1842[dni] = parseInt(UF1842,10);
-        nUF1843[dni] = parseInt(UF1843,10);
-        nUF1844[dni] = parseInt(UF1844,10);
-        nUF1845[dni] = parseInt(UF1845,10);
-        nUF1846[dni] = parseInt(UF1846,10);
-    }
 
-    function limpiarVista() {
-        $("#listado-alumnos tbody tr").remove();
-    }
-
-    cargarAlumnos();
-    totalNumeroAlumnos();
     mediaAlumnos();
-
-    function tracear() {
-        var valor;
-
-        // RECOGE EL VALOR DEL ATRIBUTO
-        valor = $("#busqueda").val();
-        console.log(valor);
-
-        // ESTABLECE UN VALOR
-        $("#busqueda").val("Borja");
-        valor = $("#busqueda").attr("value");
-        console.log(valor);
-    }
-
-    //tracear();
-    //var valor;
-    //valor = $("#busqueda").val();
-    //calcularDNI(valor)
 
     $("#main button.btn").click(function(){
         var dni = $("#busqueda").val();
