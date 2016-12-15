@@ -2,33 +2,30 @@
 $.noConflict();
 
 const URL = "http://localhost:2403/alumno";
+var numAlumnos = 0;
 
 jQuery(document).ready(function ($) {
 
     $("#listado-alumnos thead input").prop("checked", false);
 
-    var numAlumnos = 0;
-
     var promesaCarga = $.ajax('http://localhost:2403/alumno', {type: "GET"});
     promesaCarga.success(function(data) {
         numAlumnos = data.length;
-
-        console.log("Numero Alumnos 1: " + numAlumnos);
 
         for(var i=0; i<data.length; i++){
             var id = data[i].id;
             var dni = data[i].dni;
             var nombre =  data[i].nombre;
             var apellidos = data[i].apellidos;
-            var notas = new Array();
+            var notas = {};
 
             if(data[i].notas != undefined){
-                notas['UF1841'] = parseInt(data[i].notas.UF1841);
-                notas['UF1842'] = parseInt(data[i].notas.UF1842);
-                notas['UF1843'] = parseInt(data[i].notas.UF1843);
-                notas['UF1844'] = parseInt(data[i].notas.UF1844);
-                notas['UF1845'] = parseInt(data[i].notas.UF1845);
-                notas['UF1846'] = parseInt(data[i].notas.UF1846);
+                notas['UF1841'] = parseInt(data[i].notas.UF1841) || '';
+                notas['UF1842'] = parseInt(data[i].notas.UF1842) || '';
+                notas['UF1843'] = parseInt(data[i].notas.UF1843) || '';
+                notas['UF1844'] = parseInt(data[i].notas.UF1844) || '';
+                notas['UF1845'] = parseInt(data[i].notas.UF1845) || '';
+                notas['UF1846'] = parseInt(data[i].notas.UF1846) || '';
             } else{
                 notas['UF1841'] = 0;
                 notas['UF1842'] = 0;
@@ -41,32 +38,45 @@ jQuery(document).ready(function ($) {
             insertarAlumnoVista(id, dni, nombre, apellidos, notas);
         }
 
+        var html_text = "<tr>" +
+            "<td colspan='10'>Nota Media:</td>" +
+            "<td colspan='2'></td>" +
+            "</tr>";
+
+        $("#listado-alumnos tfoot").append(html_text);
+
+        calcularMediaClase();
         totalNumeroAlumnos();
     });
 
     function insertarAlumnoBDA(dni, nombre, apellidos, notas) {
-        var id;
-        var promesaAgregar = $.ajax('http://localhost:2403/alumno', {
-            type: "POST",
-            data: {
-                dni: dni,
-                nombre: nombre,
-                apellidos: apellidos,
-                notas: notas
-            },
-            success: function(data) {
-                //console.log(data.id);
-                id = data.id;
-                //alert("Alumno insertado correctamente.");
-            },
-            error: function(xhr) {
-                alert("Error Insertar: " + xhr.responseText);
-            }
+        var codigo = 0;
+        ajax({url:URL,type:"POST",data:{
+            dni: dni,
+            nombre: nombre,
+            apellidos: apellidos,
+            notas: notas
+        }}).then(function (data) {
+           // console.log("ID Alumno 1: " + data.id);
+            codigo = data.id;
+            console.log("ID Alumno: " + codigo);
+            //alert("Alumno insertado correctamente.");
+            numAlumnos = numAlumnos + 1;
+            totalNumeroAlumnos();
+        }).then(insertarAlumnoVista(codigo, dni, nombre, apellidos, notas))
+            .then(calcularMediaClase)
+            .catch(function (xhr) {
+            alert("Error Insertar: " + xhr.responseText);
         });
-        return id;
     }
 
     function insertarAlumnoVista(id, dni, nombre, apellidos, notas) {
+        var media = calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]);
+
+        if (media != '') {
+            media = media.toFixed(2);
+        }
+
         var html_text = "<tr class='fila'>" +
                 "<td align='center'><input type='checkbox' value='" + id + "'/></td>" +
                 "<td>" + dni + "</td>" +
@@ -78,7 +88,7 @@ jQuery(document).ready(function ($) {
                 "<td>" + notas['UF1844'] + "</td>" +
                 "<td>" + notas['UF1845'] + "</td>" +
                 "<td>" + notas['UF1846'] + "</td>" +
-                "<td>" + calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]).toFixed(2) + "</td>" +
+                "<td class='media'>" + media + "</td>" +
                 "<td><button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info' value='" + id + "'>Editar</button></td>" +
             "</tr>";
 
@@ -86,27 +96,31 @@ jQuery(document).ready(function ($) {
     }
 
     function actualizarAlumnoBDA(id, dni, nombre, apellidos, notas) {
-        var promesaAgregar = $.ajax('http://localhost:2403/alumno', {
-            type: "PUT",
-            data: {
+        ajax({url:URL,type:"PUT",
+            data:{
                 id: id,
                 dni: dni,
                 nombre: nombre,
                 apellidos: apellidos,
                 notas: notas
-            },
-            success: function(todo) {
-                //alert("Alumno insertado correctamente.");
-            },
-            error: function(xhr) {
-                alert("Error Insertar: " + xhr.responseText);
             }
+        }).then(function () {
+            actualizarAlumnoVista(id, dni, nombre, apellidos, notas);
+        }).then(function () {
+            calcularMediaClase();
+        }).catch(function (xhr) {
+            alert("Error Actualizar: " + xhr.responseText);
         });
     }
 
     function actualizarAlumnoVista(id, dni, nombre, apellidos, notas) {
         var $input = $("#listado-alumnos tbody input[value="+id+"]");
-        //console.log($input);
+
+        var media = calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]);
+
+        if (media != '') {
+            media = media.toFixed(2);
+        }
 
         var html_text = "" +
             "<td align='center'><input type='checkbox' value='" + id + "'/></td>" +
@@ -119,7 +133,7 @@ jQuery(document).ready(function ($) {
             "<td>" + notas['UF1844'] + "</td>" +
             "<td>" + notas['UF1845'] + "</td>" +
             "<td>" + notas['UF1846'] + "</td>" +
-            "<td>" + calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]).toFixed(2) + "</td>" +
+            "<td>" + media + "</td>" +
             "<td><button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info' value='" + id + "'>Editar</button></td>" +
             "";
 
@@ -130,10 +144,10 @@ jQuery(document).ready(function ($) {
         //$("#alumnos div span.totalAlumnos").text("Total Alumnos: " + dnies.length);
         //$("#alumnos div span:eq(0)").append(" " + dnies.length);
 
-        console.log("Numero Alumnos 2: " + numAlumnos);
-
-        if(numAlumnos=0){
+        if(numAlumnos==0){
             console.log("No hay alumnos.");
+        } else{
+            console.log("Numero Alumnos: " + numAlumnos);
         }
 
         $("#alumnos div span:eq(0)").text("Total Alumnos: " + numAlumnos);
@@ -151,25 +165,22 @@ jQuery(document).ready(function ($) {
         return media;
     }
 
-    function mediaAlumnos() {
-        var mediaAlumnos = Array();
-        /*
-        mediaAlumnos.push(notas['UF1841']);
-        mediaAlumnos.push(notas['UF1842']);
-        mediaAlumnos.push(notas['UF1843']);
-        mediaAlumnos.push(notas['UF1844']);
-        mediaAlumnos.push(notas['UF1845']);
-        mediaAlumnos.push(notas['UF1846']);
-        */
+    function calcularMediaClase() {
+        var valor = 0;
+        var media = 0;
 
-        var nota = calcularMedia(mediaAlumnos);
+        $("#listado-alumnos").find(".media").each(function () {
+            var nota = parseFloat($(this).text()) || -1;
+            console.log("Nota: " + nota);
+            if(nota > -1) {
+                valor += nota;
+                media++;
+            }
+        });
 
-        var html_text = "<tr>" +
-            "<td colspan='10'>Nota Media:</td>" +
-            "<td colspan='2'>" + nota.toFixed(2) + "</td>" +
-            "</tr>";
+        media = valor / media;
 
-        $("#listado-alumnos tfoot").append(html_text);
+        $("#listado-alumnos").find("tfoot tr td:eq(1)").text(media.toFixed(2));
     }
 
     /* BOTON EDITAR */
@@ -177,28 +188,27 @@ jQuery(document).ready(function ($) {
         var id = $(this).val();
         var datos = {id: id};
 
-        ajax({url:URL,type:"GET",data:datos}).then(function (data) {
-            //console.log(data);
+        ajax({url:URL,type:"GET",data:datos})
+            .then(function (data) {
+                $('#myModal').on('shown.bs.modal', function () {
+                    $('#dni').focus();
 
-            $('#myModal').on('shown.bs.modal', function () {
-                $('#dni').focus();
-
-                $('#id').val(data.id);
-                $('#dni').val(data.dni);
-                $('#nombre').val(data.nombre);
-                $('#apellidos').val(data.apellidos);
-                $('#nUF1841').val(data.notas.UF1841);
-                $('#nUF1842').val(data.notas.UF1842);
-                $('#nUF1843').val(data.notas.UF1843);
-                $('#nUF1844').val(data.notas.UF1844);
-                $('#nUF1845').val(data.notas.UF1845);
-                $('#nUF1846').val(data.notas.UF1846);
-            });
-        }).catch(function(error){
-            console.log(error);
-            alert(error.status + ": Datos no encontrados.");
+                    $('#id').val(data.id);
+                    $('#dni').val(data.dni);
+                    $('#nombre').val(data.nombre);
+                    $('#apellidos').val(data.apellidos);
+                    $('#nUF1841').val(data.notas.UF1841);
+                    $('#nUF1842').val(data.notas.UF1842);
+                    $('#nUF1843').val(data.notas.UF1843);
+                    $('#nUF1844').val(data.notas.UF1844);
+                    $('#nUF1845').val(data.notas.UF1845);
+                    $('#nUF1846').val(data.notas.UF1846);
+                });
+            })
+            .catch(function(error){
+                console.log(error);
+                alert(error.status + ": Datos no encontrados.");
         });
-
     });
 
     function ajax(opciones) {
@@ -243,12 +253,12 @@ jQuery(document).ready(function ($) {
         var dni = $("#myModal #dni").val();
         var nombre = $("#myModal #nombre").val();
         var apellidos = $("#myModal #apellidos").val();
-        var UF1841 = parseInt($("#myModal #nUF1841").val());
-        var UF1842 = parseInt($("#myModal #nUF1842").val());
-        var UF1843 = parseInt($("#myModal #nUF1843").val());
-        var UF1844 = parseInt($("#myModal #nUF1844").val());
-        var UF1845 = parseInt($("#myModal #nUF1845").val());
-        var UF1846 = parseInt($("#myModal #nUF1846").val());
+        var UF1841 = parseInt($("#myModal #nUF1841").val()) || '';
+        var UF1842 = parseInt($("#myModal #nUF1842").val()) || '';
+        var UF1843 = parseInt($("#myModal #nUF1843").val()) || '';
+        var UF1844 = parseInt($("#myModal #nUF1844").val()) || '';
+        var UF1845 = parseInt($("#myModal #nUF1845").val()) || '';
+        var UF1846 = parseInt($("#myModal #nUF1846").val()) || '';
 
         if(!validarDNI(dni)){
             alert("Atencion! DNI no valido.")
@@ -296,14 +306,6 @@ jQuery(document).ready(function ($) {
         }
 
         if(valido){
-            var notasVista = new Array();
-            notasVista['UF1841'] = UF1841;
-            notasVista['UF1842'] = UF1842;
-            notasVista['UF1843'] = UF1843;
-            notasVista['UF1844'] = UF1844;
-            notasVista['UF1845'] = UF1845;
-            notasVista['UF1846'] = UF1846;
-
             var notasBDA = {
                 UF1841: UF1841,
                 UF1842: UF1842,
@@ -317,20 +319,15 @@ jQuery(document).ready(function ($) {
                 // ACTUALIZAR ALUMNO
                 console.log("Alumno actualidado - DNI: " + dni);
                 actualizarAlumnoBDA(id, dni, nombre, apellidos, notasBDA);
-                actualizarAlumnoVista(id, dni, nombre, apellidos, notasBDA);
 
             } else{
                 // CREAR USUARIO
                 console.log("Alumno creado - DNI: " + dni);
-                var codigo = insertarAlumnoBDA(dni, nombre, apellidos, notasBDA);
-                insertarAlumnoVista(codigo, dni, nombre, apellidos, notasVista);
+                insertarAlumnoBDA(dni, nombre, apellidos, notasBDA);
             }
 
             $('#myModal').modal('hide');
         }
-
-        numAlumnos = numAlumnos + 1;
-        totalNumeroAlumnos();
     });
 
     /* BOTON BORRAR */
@@ -343,23 +340,19 @@ jQuery(document).ready(function ($) {
             cont = cont + 1;
 
             // Borrado BDA
-            $.ajax({
-                type: "DELETE",
-                url  : URL,
-                data: {
+            ajax({url:URL,type:"DELETE",
+                data:{
                     id: id
-                },
-                success: function(data) {
-                    //alert("Borrado OK");
-                },
-                error: function(xhr) {
-                    alert("Error Borrado: " + xhr.responseText);
                 }
+            }).then(function() {
+                // Borrado Vista
+                borrarAlumnoVista();
+            }).then(function () {
+                calcularMediaClase();
+            }).catch(function (xhr) {
+                alert("Error Insertar: " + xhr.responseText);
             });
         });
-
-        // Borrado Vista
-        borrarAlumnoVista();
 
         // Actualizar Numero Alumnos
         numAlumnos = numAlumnos - cont;
@@ -390,7 +383,7 @@ jQuery(document).ready(function ($) {
     function validarNota(nota) {
         var valido = false;
 
-        if(nota>=0 && nota <= 10){
+        if((nota>=0 && nota <= 10) || nota==''){
             valido=true;
         }
 
@@ -405,8 +398,6 @@ jQuery(document).ready(function ($) {
 
         return valido;
     }
-
-    mediaAlumnos();
 
     $("#main button.btn").click(function(){
         var dni = $("#busqueda").val();
