@@ -17,6 +17,7 @@ jQuery(document).ready(function ($) {
             var dni = data[i].dni;
             var nombre =  data[i].nombre;
             var apellidos = data[i].apellidos;
+            var fechaNacimiento = data[i].fechaNacimiento;
             var notas = {};
 
             if(data[i].notas != undefined){
@@ -35,11 +36,11 @@ jQuery(document).ready(function ($) {
                 notas['UF1846'] = 0;
             }
 
-            insertarAlumnoVista(id, dni, nombre, apellidos, notas);
+            insertarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas);
         }
 
         var html_text = "<tr>" +
-            "<td colspan='10'>Nota Media:</td>" +
+            "<td colspan='11'>Nota Media:</td>" +
             "<td colspan='2'></td>" +
             "</tr>";
 
@@ -49,12 +50,13 @@ jQuery(document).ready(function ($) {
         totalNumeroAlumnos();
     });
 
-    function insertarAlumnoBDA(dni, nombre, apellidos, notas) {
+    function insertarAlumnoBDA(dni, nombre, apellidos, fechaNacimiento, notas) {
         var codigo = 0;
         ajax({url:URL,type:"POST",data:{
             dni: dni,
             nombre: nombre,
             apellidos: apellidos,
+            fechaNacimiento: fechaNacimiento,
             notas: notas
         }}).then(function (data) {
            // console.log("ID Alumno 1: " + data.id);
@@ -63,14 +65,14 @@ jQuery(document).ready(function ($) {
             //alert("Alumno insertado correctamente.");
             numAlumnos = numAlumnos + 1;
             totalNumeroAlumnos();
-        }).then(insertarAlumnoVista(codigo, dni, nombre, apellidos, notas))
+        }).then(insertarAlumnoVista(codigo, dni, nombre, apellidos, fechaNacimiento, notas))
             .then(calcularMediaClase)
             .catch(function (xhr) {
             alert("Error Insertar: " + xhr.responseText);
         });
     }
 
-    function insertarAlumnoVista(id, dni, nombre, apellidos, notas) {
+    function insertarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas) {
         var media = calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]);
 
         if (media != '') {
@@ -82,6 +84,7 @@ jQuery(document).ready(function ($) {
                 "<td>" + dni + "</td>" +
                 "<td>" + nombre + "</td>" +
                 "<td>" + apellidos + "</td>" +
+                "<td>" + fechaNacimiento + "</td>" +
                 "<td>" + notas['UF1841'] + "</td>" +
                 "<td>" + notas['UF1842'] + "</td>" +
                 "<td>" + notas['UF1843'] + "</td>" +
@@ -95,17 +98,18 @@ jQuery(document).ready(function ($) {
         $('#listado-alumnos tbody').append(html_text);
     }
 
-    function actualizarAlumnoBDA(id, dni, nombre, apellidos, notas) {
+    function actualizarAlumnoBDA(id, dni, nombre, apellidos, fechaNacimiento, notas) {
         ajax({url:URL,type:"PUT",
             data:{
                 id: id,
                 dni: dni,
                 nombre: nombre,
                 apellidos: apellidos,
+                fechaNacimiento: fechaNacimiento,
                 notas: notas
             }
         }).then(function () {
-            actualizarAlumnoVista(id, dni, nombre, apellidos, notas);
+            actualizarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas);
         }).then(function () {
             calcularMediaClase();
         }).catch(function (xhr) {
@@ -113,7 +117,7 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function actualizarAlumnoVista(id, dni, nombre, apellidos, notas) {
+    function actualizarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas) {
         var $input = $("#listado-alumnos tbody input[value="+id+"]");
 
         var media = calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]);
@@ -127,6 +131,7 @@ jQuery(document).ready(function ($) {
             "<td>" + dni + "</td>" +
             "<td>" + nombre + "</td>" +
             "<td>" + apellidos + "</td>" +
+            "<td>" + fechaNacimiento + "</td>" +
             "<td>" + notas['UF1841'] + "</td>" +
             "<td>" + notas['UF1842'] + "</td>" +
             "<td>" + notas['UF1843'] + "</td>" +
@@ -171,7 +176,6 @@ jQuery(document).ready(function ($) {
 
         $("#listado-alumnos").find(".media").each(function () {
             var nota = parseFloat($(this).text()) || -1;
-            console.log("Nota: " + nota);
             if(nota > -1) {
                 valor += nota;
                 media++;
@@ -197,6 +201,7 @@ jQuery(document).ready(function ($) {
                     $('#dni').val(data.dni);
                     $('#nombre').val(data.nombre);
                     $('#apellidos').val(data.apellidos);
+                    $('#fechaNacimiento').val(data.fechaNacimiento);
                     $('#nUF1841').val(data.notas.UF1841);
                     $('#nUF1842').val(data.notas.UF1842);
                     $('#nUF1843').val(data.notas.UF1843);
@@ -234,6 +239,7 @@ jQuery(document).ready(function ($) {
             $('#dni').val("");
             $('#nombre').val("");
             $('#apellidos').val("");
+            $('#fechaNacimiento').val("");
             $('#nUF1841').val("");
             $('#nUF1842').val("");
             $('#nUF1843').val("");
@@ -253,6 +259,8 @@ jQuery(document).ready(function ($) {
         var dni = $("#myModal #dni").val();
         var nombre = $("#myModal #nombre").val();
         var apellidos = $("#myModal #apellidos").val();
+        var fechaNacimiento = $("#myModal #fechaNacimiento").val();
+        var edad = getAge(fechaNacimiento);
         var UF1841 = parseInt($("#myModal #nUF1841").val()) || '';
         var UF1842 = parseInt($("#myModal #nUF1842").val()) || '';
         var UF1843 = parseInt($("#myModal #nUF1843").val()) || '';
@@ -272,6 +280,11 @@ jQuery(document).ready(function ($) {
 
         if(!validarTexto(apellidos, 4)){
             alert("Atencion! Apellido no valido. Longitud minima 4.");
+            valido=false;
+        }
+
+        if(!validarEdad(edad)){
+            alert("Atencion! La edad no puede ser inferior a 18 ni superior a 64.");
             valido=false;
         }
 
@@ -318,12 +331,12 @@ jQuery(document).ready(function ($) {
             if(id!=""){
                 // ACTUALIZAR ALUMNO
                 console.log("Alumno actualidado - DNI: " + dni);
-                actualizarAlumnoBDA(id, dni, nombre, apellidos, notasBDA);
+                actualizarAlumnoBDA(id, dni, nombre, apellidos, fechaNacimiento, notasBDA);
 
             } else{
                 // CREAR USUARIO
                 console.log("Alumno creado - DNI: " + dni);
-                insertarAlumnoBDA(dni, nombre, apellidos, notasBDA);
+                insertarAlumnoBDA(dni, nombre, apellidos, fechaNacimiento, notasBDA);
             }
 
             $('#myModal').modal('hide');
@@ -366,7 +379,6 @@ jQuery(document).ready(function ($) {
     function validarDNI(dni) {
         var len = 9;
         var valido = false;
-
         if(dni.length==len){
             var dniNumero = dni.substring(0, dni.length-1);
             var dniLetra = dni.substring(dni.length-1, dni.length);
@@ -376,17 +388,14 @@ jQuery(document).ready(function ($) {
                 valido=true;
             }
         }
-
         return valido;
     }
 
     function validarNota(nota) {
         var valido = false;
-
         if((nota>=0 && nota <= 10) || nota==''){
             valido=true;
         }
-
         return valido;
     }
 
@@ -395,8 +404,39 @@ jQuery(document).ready(function ($) {
         if(texto.length>=len){
             valido=true;
         }
-
         return valido;
+    }
+
+    function validarEdad(edad) {
+        var valido = false;
+        if(edad > 17 && edad < 65){
+            valido=true;
+        }
+        return valido;
+    }
+
+    function getAge(dateString) {
+        var today = new Date();
+        var birthDate = new Date(dateString);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    function getCurrentDate() {
+        Date.prototype.yyyymmdd = function() {
+            var yyyy = this.getFullYear().toString();
+            var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
+            var dd  = this.getDate().toString();
+            return yyyy + "-" + (mm[1]?mm:"0"+mm[0]) + "-" + (dd[1]?dd:"0"+dd[0]); // padding
+        };
+
+        var date = new Date();
+        var fechaActual = date.yyyymmdd();
+        return fechaActual;
     }
 
     $("#main button.btn").click(function(){
