@@ -133,7 +133,7 @@ jQuery(document).ready(function ($) {
             "<td>" + notas['UF1844'] + "</td>" +
             "<td>" + notas['UF1845'] + "</td>" +
             "<td>" + notas['UF1846'] + "</td>" +
-            "<td>" + media + "</td>" +
+            "<td class='media'>" + media + "</td>" +
             "<td><button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info' value='" + id + "'>Editar</button></td>" +
             "";
 
