@@ -150,6 +150,75 @@
         </div>
     </div>
 
+    <section id="localizacion">
+
+    </section>
+
+    <script>
+        function initMap() {
+            cargarCoordenadas();
+        }
+
+        function cargarCoordenadas() {
+            var content = document.getElementById("geolocation-test");
+
+            if (navigator.geolocation)
+            {
+                navigator.geolocation.getCurrentPosition(function(objPosition)
+                {
+                    var lon = 0;
+                    var lat = 0;
+
+                    lon = objPosition.coords.longitude;
+                    lat = objPosition.coords.latitude;
+
+                    console.log("Longitud: " + lon);
+                    console.log("Latitud: " + lat);
+
+                    /*
+                    var myLatlng = new google.maps.LatLng(lat, lon);
+                    var mapOptions = {
+                        zoom: 8,
+                        center: myLatlng,
+                        mapTypeId: google.maps.MapTypeId.SATELLITE
+                    };
+
+                    var map = new google.maps.Map(document.getElementById("map"),
+                            mapOptions);
+                    */
+
+                    //content.innerHTML = "<p><strong>Latitud:</strong> " + lat + "</p><p><strong>Longitud:</strong> " + lon + "</p>";
+
+                }, function(objPositionError)
+                {
+                    switch (objPositionError.code)
+                    {
+                        case objPositionError.PERMISSION_DENIED:
+                            //content.innerHTML = "No se ha permitido el acceso a la posición del usuario.";
+                            break;
+                        case objPositionError.POSITION_UNAVAILABLE:
+                            //content.innerHTML = "No se ha podido acceder a la información de su posición.";
+                            break;
+                        case objPositionError.TIMEOUT:
+                            //content.innerHTML = "El servicio ha tardado demasiado tiempo en responder.";
+                            break;
+                        default:
+                            //content.innerHTML = "Error desconocido.";
+                    }
+                }, {
+                    maximumAge: 75000,
+                    timeout: 15000
+                });
+            }
+            else
+            {
+                content.innerHTML = "Su navegador no soporta la API de geolocalización.";
+            }
+        }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKfqZ2a6BwkSCwWJvqLe9HmPSPcnCPtfg&callback=initMap" async defer></script>
+
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="js/min.js"></script>
     <script src="js/bootstrap.min.js"></script>
