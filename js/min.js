@@ -6,6 +6,39 @@ var numAlumnos = 0;
 
 jQuery(document).ready(function ($) {
 
+    /* BUSQUEDA EN DIRECTO */
+    (function ($) {
+        $('#filtrar').keyup(function () {
+            var rex = new RegExp($(this).val(), 'i');
+            $('.buscar tr').hide();
+            $('.buscar tr').filter(function () {
+                return rex.test($(this).text());
+            }).show();
+        })
+    }(jQuery));
+
+    /* BOTON BUSCAR */
+    $("#alumnos .input-group-btn").on("click", function (e) {
+        var valor=$("#alumnos div input.form-control").val();
+        buscar(valor);
+    });
+
+    /* BUSCADOR ENTER INPUT */
+    $("#alumnos .form-control").keyup(function(event){
+        if(event.keyCode == 13){
+            $("#alumnos .input-group-btn").click();
+        }
+    });
+
+    function buscar(valor) {
+        console.log("Valor: " + valor);
+
+        $("#listado-alumnos tbody").find(valor).each(function () {
+            var $input = $("#listado-alumnos tbody td[value="+valor+"]");
+            alert($input);
+        });
+    }
+
     function cargarHora() {
         var fecha = getCurrentDate();
         $("#alumnos div p.fecha").text(fecha);
