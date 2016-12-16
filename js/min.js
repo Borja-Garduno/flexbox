@@ -6,7 +6,11 @@ var numAlumnos = 0;
 
 jQuery(document).ready(function ($) {
 
-    $("#listado-alumnos thead input").prop("checked", false);
+    function cargarHora() {
+        var fecha = getCurrentDate();
+        $("#alumnos div p.fecha").text(fecha);
+    }
+    setInterval(cargarHora, 0);
 
     var promesaCarga = $.ajax('http://localhost:2403/alumno', {type: "GET"});
     promesaCarga.success(function(data) {
@@ -155,7 +159,7 @@ jQuery(document).ready(function ($) {
             console.log("Numero Alumnos: " + numAlumnos);
         }
 
-        $("#alumnos div span:eq(0)").text("Total Alumnos: " + numAlumnos);
+        $("#alumnos div span.totalAlumnos").text("Total Alumnos: " + numAlumnos);
     }
 
     function calcularMedia(numeros) {
@@ -427,15 +431,23 @@ jQuery(document).ready(function ($) {
     }
 
     function getCurrentDate() {
-        Date.prototype.yyyymmdd = function() {
+        Date.prototype.ddmmyyyy = function() {
             var yyyy = this.getFullYear().toString();
             var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
             var dd  = this.getDate().toString();
-            return yyyy + "-" + (mm[1]?mm:"0"+mm[0]) + "-" + (dd[1]?dd:"0"+dd[0]); // padding
+
+            var hour = this.getHours();
+            var min = this.getMinutes().toString();
+            var seg = this.getSeconds().toString();
+
+            var hora = hour + ":" + (min[1]?min:"0"+min[0]) + ":" + (seg[1]?seg:"0"+seg[0]);
+
+            //return yyyy + "/" + (mm[1]?mm:"0"+mm[0]) + "/" + (dd[1]?dd:"0"+dd[0]); // padding
+            return (dd[1]?dd:"0"+dd[0]) + "/" + (mm[1]?mm:"0"+mm[0]) + "/" + yyyy + " - " + hora; // padding
         };
 
         var date = new Date();
-        var fechaActual = date.yyyymmdd();
+        var fechaActual = date.ddmmyyyy();
         return fechaActual;
     }
 
@@ -447,12 +459,12 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         return false;
     });
-});
 
-function calcularDNI(dni){
-    cadena="TRWAGMYFPDXBNJZSQVHLCKET";
-    posicion = dni % 23;
-    letra = cadena.substring(posicion,posicion+1);
-    //alert("Letra DNI: " + letra);
-    return letra;
-}
+    function calcularDNI(dni){
+        cadena="TRWAGMYFPDXBNJZSQVHLCKET";
+        posicion = dni % 23;
+        letra = cadena.substring(posicion,posicion+1);
+        //alert("Letra DNI: " + letra);
+        return letra;
+    }
+});
