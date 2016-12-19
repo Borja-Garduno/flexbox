@@ -1,3 +1,7 @@
+.tabla-alumnos{
+    width: 100%;
+}
+
 .tabla-alumnos table, th, td {
     /*border: 1px solid black;*/
     font-size: medium;
@@ -22,4 +26,37 @@
 
 .fecha{
     text-align: right;
+}
+
+/* ******************* MAPA ************************* */
+
+#map {
+    height: 100%;
+    color: black;
+    min-height: 500px;
+}
+
+#right-panel {
+    font-family: 'Roboto','sans-serif';
+    line-height: 30px;
+    padding-left: 10px;
+}
+
+#right-panel select, #right-panel input {
+    font-size: 15px;
+}
+
+#right-panel select {
+    width: 100%;
+}
+
+#right-panel i {
+    font-size: 12px;
+}
+
+#right-panel {
+    height: 100%;
+    float: right;
+    width: 390px;
+    overflow: auto;
 }

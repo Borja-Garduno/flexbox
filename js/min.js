@@ -55,6 +55,7 @@ jQuery(document).ready(function ($) {
             var nombre =  data[i].nombre;
             var apellidos = data[i].apellidos;
             var fechaNacimiento = data[i].fechaNacimiento;
+            var direccion = data[i].direccion;
             var notas = {};
 
             if(data[i].notas != undefined){
@@ -73,11 +74,11 @@ jQuery(document).ready(function ($) {
                 notas['UF1846'] = 0;
             }
 
-            insertarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas);
+            insertarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, direccion, notas);
         }
 
         var html_text = "<tr>" +
-            "<td colspan='11'>Nota Media:</td>" +
+            "<td colspan='12'>Nota Media:</td>" +
             "<td colspan='2'></td>" +
             "</tr>";
 
@@ -87,13 +88,14 @@ jQuery(document).ready(function ($) {
         totalNumeroAlumnos();
     });
 
-    function insertarAlumnoBDA(dni, nombre, apellidos, fechaNacimiento, notas) {
+    function insertarAlumnoBDA(dni, nombre, apellidos, fechaNacimiento, direccion, notas) {
         var codigo = 0;
         ajax({url:URL,type:"POST",data:{
             dni: dni,
             nombre: nombre,
             apellidos: apellidos,
             fechaNacimiento: fechaNacimiento,
+            direccion: direccion,
             notas: notas
         }}).then(function (data) {
            // console.log("ID Alumno 1: " + data.id);
@@ -102,14 +104,14 @@ jQuery(document).ready(function ($) {
             //alert("Alumno insertado correctamente.");
             numAlumnos = numAlumnos + 1;
             totalNumeroAlumnos();
-        }).then(insertarAlumnoVista(codigo, dni, nombre, apellidos, fechaNacimiento, notas))
+        }).then(insertarAlumnoVista(codigo, dni, nombre, apellidos, fechaNacimiento, direccion, notas))
             .then(calcularMediaClase)
             .catch(function (xhr) {
             alert("Error Insertar: " + xhr.responseText);
         });
     }
 
-    function insertarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas) {
+    function insertarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, direccion, notas) {
         var media = calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]);
 
         if (media != '') {
@@ -122,6 +124,7 @@ jQuery(document).ready(function ($) {
                 "<td>" + nombre + "</td>" +
                 "<td>" + apellidos + "</td>" +
                 "<td>" + fechaNacimiento + "</td>" +
+                "<td>" + direccion + "</td>" +
                 "<td>" + notas['UF1841'] + "</td>" +
                 "<td>" + notas['UF1842'] + "</td>" +
                 "<td>" + notas['UF1843'] + "</td>" +
@@ -135,7 +138,7 @@ jQuery(document).ready(function ($) {
         $('#listado-alumnos tbody').append(html_text);
     }
 
-    function actualizarAlumnoBDA(id, dni, nombre, apellidos, fechaNacimiento, notas) {
+    function actualizarAlumnoBDA(id, dni, nombre, apellidos, fechaNacimiento, direccion, notas) {
         ajax({url:URL,type:"PUT",
             data:{
                 id: id,
@@ -143,10 +146,11 @@ jQuery(document).ready(function ($) {
                 nombre: nombre,
                 apellidos: apellidos,
                 fechaNacimiento: fechaNacimiento,
+                direccion: direccion,
                 notas: notas
             }
         }).then(function () {
-            actualizarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas);
+            actualizarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, direccion, notas);
         }).then(function () {
             calcularMediaClase();
         }).catch(function (xhr) {
@@ -154,7 +158,7 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function actualizarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, notas) {
+    function actualizarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, direccion, notas) {
         var $input = $("#listado-alumnos tbody input[value="+id+"]");
 
         var media = calcularMedia([notas['UF1841'], notas['UF1842'], notas['UF1843'], notas['UF1844'], notas['UF1845'], notas['UF1846']]);
@@ -169,6 +173,7 @@ jQuery(document).ready(function ($) {
             "<td>" + nombre + "</td>" +
             "<td>" + apellidos + "</td>" +
             "<td>" + fechaNacimiento + "</td>" +
+            "<td>" + direccion + "</td>" +
             "<td>" + notas['UF1841'] + "</td>" +
             "<td>" + notas['UF1842'] + "</td>" +
             "<td>" + notas['UF1843'] + "</td>" +
@@ -239,6 +244,7 @@ jQuery(document).ready(function ($) {
                     $('#nombre').val(data.nombre);
                     $('#apellidos').val(data.apellidos);
                     $('#fechaNacimiento').val(data.fechaNacimiento);
+                    $('#direccion').val(data.direccion);
                     $('#nUF1841').val(data.notas.UF1841);
                     $('#nUF1842').val(data.notas.UF1842);
                     $('#nUF1843').val(data.notas.UF1843);
@@ -277,6 +283,7 @@ jQuery(document).ready(function ($) {
             $('#nombre').val("");
             $('#apellidos').val("");
             $('#fechaNacimiento').val("");
+            $('#direccion').val("");
             $('#nUF1841').val("");
             $('#nUF1842').val("");
             $('#nUF1843').val("");
@@ -297,6 +304,7 @@ jQuery(document).ready(function ($) {
         var nombre = $("#myModal #nombre").val();
         var apellidos = $("#myModal #apellidos").val();
         var fechaNacimiento = $("#myModal #fechaNacimiento").val();
+        var direccion = $("#myModal #direccion").val();
         var edad = getAge(fechaNacimiento);
         var UF1841 = parseInt($("#myModal #nUF1841").val()) || '';
         var UF1842 = parseInt($("#myModal #nUF1842").val()) || '';
@@ -324,6 +332,13 @@ jQuery(document).ready(function ($) {
             alert("Atencion! La edad no puede ser inferior a 18 ni superior a 64.");
             valido=false;
         }
+
+        /*
+        if(!validarTexto(direccion, 5)){
+            alert("Atencion! La longitud de la direccion no puede ser inferior a 5.");
+            valido=false;
+        }
+        */
 
         if(!validarNota(UF1841)){
             alert("Atencion! UF1841 no valido.");
@@ -368,12 +383,12 @@ jQuery(document).ready(function ($) {
             if(id!=""){
                 // ACTUALIZAR ALUMNO
                 console.log("Alumno actualidado - DNI: " + dni);
-                actualizarAlumnoBDA(id, dni, nombre, apellidos, fechaNacimiento, notasBDA);
+                actualizarAlumnoBDA(id, dni, nombre, apellidos, fechaNacimiento, direccion, notasBDA);
 
             } else{
                 // CREAR USUARIO
                 console.log("Alumno creado - DNI: " + dni);
-                insertarAlumnoBDA(dni, nombre, apellidos, fechaNacimiento, notasBDA);
+                insertarAlumnoBDA(dni, nombre, apellidos, fechaNacimiento, direccion, notasBDA);
             }
 
             $('#myModal').modal('hide');
@@ -500,4 +515,71 @@ jQuery(document).ready(function ($) {
         //alert("Letra DNI: " + letra);
         return letra;
     }
+
+    /* MAPA */
+
+    function getPreciseLocation() {
+        return new Promise(function (resolve, reject) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                console.log("Latitud: " + position.coords.latitude);
+                console.log("Longitud: " + position.coords.longitude);
+                resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
+            });
+        });
+    }
+
+    function cargarMapa(coordenadas) {
+        //console.log("Coordenadas: " + coordenadas);
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+
+        var element = document.getElementById('map');
+        var myCenter = new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude);
+            var mapOptions = {
+            center: new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude),
+            zoom: 16,
+            scrollwheel: true,
+            mapTypeId: google.maps.MapTypeId.HYBRID
+            };
+
+        var map = new google.maps.Map(element, mapOptions);
+        map.setTilt(0); // Quitar la inclinacion de 45º
+
+        // Marcador Rojo
+        /*
+        var marker = new google.maps.Marker({position: myCenter});
+        marker.setMap(map);
+        */
+        directionsDisplay.setMap(map);
+        directionsDisplay.setPanel(document.getElementById('right-panel'));
+
+        var casa = new google.maps.LatLng(43.322308, -2.988435);
+        var ipartek = new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude);
+
+        /*
+         Ipartek
+         Latitud: 43.256102299999995
+         Longitud: -2.9139797
+         */
+
+        directionsService.route({
+            origin: casa,
+            destination: ipartek,
+            travelMode: google.maps.TravelMode.TRANSIT
+        }, function(response, status) {
+            if (status === google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
+
+    getPreciseLocation()
+        .then(cargarMapa)
+        .catch(function errorHandler(error) {
+            console.log(error);
+    });
+    
+
 });
