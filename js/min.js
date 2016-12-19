@@ -98,7 +98,7 @@ jQuery(document).ready(function ($) {
             direccion: direccion,
             notas: notas
         }}).then(function (data) {
-           // console.log("ID Alumno 1: " + data.id);
+            // console.log("ID Alumno 1: " + data.id);
             codigo = data.id;
             console.log("ID Alumno: " + codigo);
             //alert("Alumno insertado correctamente.");
@@ -107,8 +107,8 @@ jQuery(document).ready(function ($) {
         }).then(insertarAlumnoVista(codigo, dni, nombre, apellidos, fechaNacimiento, direccion, notas))
             .then(calcularMediaClase)
             .catch(function (xhr) {
-            alert("Error Insertar: " + xhr.responseText);
-        });
+                alert("Error Insertar: " + xhr.responseText);
+            });
     }
 
     function insertarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, direccion, notas) {
@@ -119,20 +119,20 @@ jQuery(document).ready(function ($) {
         }
 
         var html_text = "<tr class='fila'>" +
-                "<td align='center'><input type='checkbox' value='" + id + "'/></td>" +
-                "<td>" + dni + "</td>" +
-                "<td>" + nombre + "</td>" +
-                "<td>" + apellidos + "</td>" +
-                "<td>" + fechaNacimiento + "</td>" +
-                "<td>" + direccion + "</td>" +
-                "<td>" + notas['UF1841'] + "</td>" +
-                "<td>" + notas['UF1842'] + "</td>" +
-                "<td>" + notas['UF1843'] + "</td>" +
-                "<td>" + notas['UF1844'] + "</td>" +
-                "<td>" + notas['UF1845'] + "</td>" +
-                "<td>" + notas['UF1846'] + "</td>" +
-                "<td class='media'>" + media + "</td>" +
-                "<td><button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info' value='" + id + "'>Editar</button></td>" +
+            "<td align='center'><input type='checkbox' value='" + id + "'/></td>" +
+            "<td>" + dni + "</td>" +
+            "<td>" + nombre + "</td>" +
+            "<td>" + apellidos + "</td>" +
+            "<td>" + fechaNacimiento + "</td>" +
+            "<td>" + direccion + "</td>" +
+            "<td>" + notas['UF1841'] + "</td>" +
+            "<td>" + notas['UF1842'] + "</td>" +
+            "<td>" + notas['UF1843'] + "</td>" +
+            "<td>" + notas['UF1844'] + "</td>" +
+            "<td>" + notas['UF1845'] + "</td>" +
+            "<td>" + notas['UF1846'] + "</td>" +
+            "<td class='media'>" + media + "</td>" +
+            "<td><button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info' value='" + id + "'>Editar</button></td>" +
             "</tr>";
 
         $('#listado-alumnos tbody').append(html_text);
@@ -256,7 +256,7 @@ jQuery(document).ready(function ($) {
             .catch(function(error){
                 console.log(error);
                 alert(error.status + ": Datos no encontrados.");
-        });
+            });
     });
 
     function ajax(opciones) {
@@ -334,11 +334,11 @@ jQuery(document).ready(function ($) {
         }
 
         /*
-        if(!validarTexto(direccion, 5)){
-            alert("Atencion! La longitud de la direccion no puede ser inferior a 5.");
-            valido=false;
-        }
-        */
+         if(!validarTexto(direccion, 5)){
+         alert("Atencion! La longitud de la direccion no puede ser inferior a 5.");
+         valido=false;
+         }
+         */
 
         if(!validarNota(UF1841)){
             alert("Atencion! UF1841 no valido.");
@@ -533,44 +533,50 @@ jQuery(document).ready(function ($) {
         var directionsService = new google.maps.DirectionsService;
         var directionsDisplay = new google.maps.DirectionsRenderer;
 
+        var geocoder = new google.maps.Geocoder();
+
         var element = document.getElementById('map');
         var myCenter = new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude);
-            var mapOptions = {
+        var mapOptions = {
             center: new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude),
             zoom: 16,
             scrollwheel: true,
             mapTypeId: google.maps.MapTypeId.HYBRID
-            };
+        };
 
         var map = new google.maps.Map(element, mapOptions);
         map.setTilt(0); // Quitar la inclinacion de 45º
 
         // Marcador Rojo
         /*
-        var marker = new google.maps.Marker({position: myCenter});
-        marker.setMap(map);
-        */
+         var marker = new google.maps.Marker({position: myCenter});
+         marker.setMap(map);
+         */
+
         directionsDisplay.setMap(map);
         directionsDisplay.setPanel(document.getElementById('right-panel'));
 
-        var casa = new google.maps.LatLng(43.322308, -2.988435);
+        var posicion;
+        var address = "Calle Aldapa, 11, Leioa";
         var ipartek = new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude);
+        geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                posicion = results[0].geometry.location;
+                //console.log(posicion);
 
-        /*
-         Ipartek
-         Latitud: 43.256102299999995
-         Longitud: -2.9139797
-         */
-
-        directionsService.route({
-            origin: casa,
-            destination: ipartek,
-            travelMode: google.maps.TravelMode.TRANSIT
-        }, function(response, status) {
-            if (status === google.maps.DirectionsStatus.OK) {
-                directionsDisplay.setDirections(response);
+                directionsService.route({
+                    origin: posicion,
+                    destination: ipartek,
+                    travelMode: google.maps.TravelMode.TRANSIT
+                }, function(response, status) {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        directionsDisplay.setDirections(response);
+                    } else {
+                        window.alert('Directions request failed due to ' + status);
+                    }
+                });
             } else {
-                window.alert('Directions request failed due to ' + status);
+                alert("Geocode was not successful for the following reason: " + status);
             }
         });
     }
@@ -579,7 +585,6 @@ jQuery(document).ready(function ($) {
         .then(cargarMapa)
         .catch(function errorHandler(error) {
             console.log(error);
-    });
-    
+        });
 
 });
