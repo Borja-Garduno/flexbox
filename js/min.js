@@ -117,7 +117,7 @@ jQuery(document).ready(function ($) {
         if (media != '') {
             media = media.toFixed(2);
         }
-        var enlace = 'javascript:cargarMapa("' + direccion + '")';
+        var enlace = 'javascript:cargarMapa("' + direccion + '", "'+modo+'")';
         var edad = getAge(fechaNacimiento);
 
         var html_text = "<tr class='fila'>" +
@@ -170,7 +170,7 @@ jQuery(document).ready(function ($) {
             media = media.toFixed(2);
         }
 
-        var enlace = 'javascript:cargarMapa("' + direccion + '")';
+        var enlace = 'javascript:cargarMapa("' + direccion + '", "'+modo+'")';
         var edad = getAge(fechaNacimiento);
 
         var html_text = "" +
@@ -544,16 +544,47 @@ jQuery(document).ready(function ($) {
     */
 });
 
-function cargarMapa(direccion) {
-    //console.log("Coordenadas: " + coordenadas);
+const ipartek={lat:43.256398, lng: -2.913550};
+var destino;
+var modo="TRANSIT";
+
+function cambiarTransporte(transporte) {
+      switch (transporte){
+        case "pie":
+            modo="WALKING";
+            break;
+
+        case "coche":
+            modo="DRIVING";
+            break;
+
+        case "publico":
+            modo="TRANSIT";
+            break;
+
+        case "bicicleta":
+            modo="BICYCLING";
+            break;
+
+        default:
+            modo="TRANSIT";
+            break;
+    }
+
+    cargarMapa(destino, modo);
+}
+
+function cargarMapa(direccion, modo) {
+    destino=direccion;
+
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer;
-    var ipartek = new google.maps.LatLng(43.256398, -2.913550);
+   // var ipartek =
     var geocoder = new google.maps.Geocoder();
 
     var element = document.getElementById('map');
     var mapOptions = {
-        center: ipartek,
+        center: new google.maps.LatLng(ipartek.lat, ipartek.lng),
         zoom: 16,
         scrollwheel: true,
         mapTypeId: google.maps.MapTypeId.HYBRID
@@ -561,6 +592,8 @@ function cargarMapa(direccion) {
 
     var map = new google.maps.Map(element, mapOptions);
     map.setTilt(0); // Quitar la inclinacion de 45º
+
+
 
     // Marcador Rojo
     /*
@@ -581,11 +614,22 @@ function cargarMapa(direccion) {
             directionsService.route({
                 origin: posicion,
                 destination: ipartek,
-                travelMode: google.maps.TravelMode.TRANSIT
+                travelMode:  google.maps.TravelMode[modo]
             }, function(response, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
+                    // Visualizar el DIV Localizacion
+                    document.getElementById("localizacion").style.display = "block";
+
+                    // Codigo necesario para visualizar el mapa correctamente
+                    var center = map.getCenter();
+                    google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
+
+                    // Vaciar el Panel Izquierdo (Indicaciones)
                     document.getElementById("right-panel").innerHTML = "";
                     directionsDisplay.setDirections(response);
+
+                    // Bajar hasta el ancla del mapa
                     location.hash = "#alumnos";
                     location.hash = "#map";
                 } else {

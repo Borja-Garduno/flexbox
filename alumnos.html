@@ -156,8 +156,14 @@
         </div>
     </div>
 
-    <section id="localizacion">
+    <section id="localizacion" style="display: none">
         <header><h2>Localizacion</h2></header>
+
+        <button type="button" class="btn btn-default" onclick="javascript:cambiarTransporte('pie')">A pie</button>
+        <button type="button" class="btn btn-success" onclick="javascript:cambiarTransporte('coche')">En coche</button>
+        <button type="button" class="btn btn-primary" onclick="javascript:cambiarTransporte('publico')">Transporte Publico</button>
+        <button type="button" class="btn btn-warning" onclick="javascript:cambiarTransporte('bicicleta')">En bicicleta</button>
+
         <div id="right-panel"></div>
         <div id="map"></div>
     </section>
