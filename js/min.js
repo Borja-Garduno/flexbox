@@ -584,6 +584,7 @@ function cargarMapa(direccion) {
                 travelMode: google.maps.TravelMode.TRANSIT
             }, function(response, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
+                    document.getElementById("right-panel").innerHTML = "";
                     directionsDisplay.setDirections(response);
                     location.hash = "#map";
                 } else {
