@@ -117,14 +117,16 @@ jQuery(document).ready(function ($) {
         if (media != '') {
             media = media.toFixed(2);
         }
+        var enlace = 'javascript:cargarMapa("' + direccion + '")';
+        var edad = getAge(fechaNacimiento);
 
         var html_text = "<tr class='fila'>" +
             "<td align='center'><input type='checkbox' value='" + id + "'/></td>" +
             "<td>" + dni + "</td>" +
             "<td>" + nombre + "</td>" +
             "<td>" + apellidos + "</td>" +
-            "<td>" + fechaNacimiento + "</td>" +
-            "<td>" + direccion + "</td>" +
+            "<td>" + edad + "</td>" +
+            "<td><a href='"+enlace+"' title='Direcciones a Ipartek'>" + direccion + "</a></td>" +
             "<td>" + notas['UF1841'] + "</td>" +
             "<td>" + notas['UF1842'] + "</td>" +
             "<td>" + notas['UF1843'] + "</td>" +
@@ -134,6 +136,7 @@ jQuery(document).ready(function ($) {
             "<td class='media'>" + media + "</td>" +
             "<td><button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info' value='" + id + "'>Editar</button></td>" +
             "</tr>";
+
 
         $('#listado-alumnos tbody').append(html_text);
     }
@@ -167,13 +170,16 @@ jQuery(document).ready(function ($) {
             media = media.toFixed(2);
         }
 
+        var enlace = 'javascript:cargarMapa("' + direccion + '")';
+        var edad = getAge(fechaNacimiento);
+
         var html_text = "" +
             "<td align='center'><input type='checkbox' value='" + id + "'/></td>" +
             "<td>" + dni + "</td>" +
             "<td>" + nombre + "</td>" +
             "<td>" + apellidos + "</td>" +
-            "<td>" + fechaNacimiento + "</td>" +
-            "<td>" + direccion + "</td>" +
+            "<td>" + edad + "</td>" +
+            "<td><a href='"+enlace+"' title='Direcciones a Ipartek'>" + direccion + "</a></td>" +
             "<td>" + notas['UF1841'] + "</td>" +
             "<td>" + notas['UF1842'] + "</td>" +
             "<td>" + notas['UF1843'] + "</td>" +
@@ -518,6 +524,7 @@ jQuery(document).ready(function ($) {
 
     /* MAPA */
 
+    /*
     function getPreciseLocation() {
         return new Promise(function (resolve, reject) {
             navigator.geolocation.getCurrentPosition(function (position) {
@@ -527,64 +534,64 @@ jQuery(document).ready(function ($) {
             });
         });
     }
+    */
 
-    function cargarMapa(coordenadas) {
-        //console.log("Coordenadas: " + coordenadas);
-        var directionsService = new google.maps.DirectionsService;
-        var directionsDisplay = new google.maps.DirectionsRenderer;
-
-        var geocoder = new google.maps.Geocoder();
-
-        var element = document.getElementById('map');
-        var myCenter = new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude);
-        var mapOptions = {
-            center: new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude),
-            zoom: 16,
-            scrollwheel: true,
-            mapTypeId: google.maps.MapTypeId.HYBRID
-        };
-
-        var map = new google.maps.Map(element, mapOptions);
-        map.setTilt(0); // Quitar la inclinacion de 45º
-
-        // Marcador Rojo
-        /*
-         var marker = new google.maps.Marker({position: myCenter});
-         marker.setMap(map);
-         */
-
-        directionsDisplay.setMap(map);
-        directionsDisplay.setPanel(document.getElementById('right-panel'));
-
-        var posicion;
-        var address = "Calle Aldapa, 11, Leioa";
-        var ipartek = new google.maps.LatLng(coordenadas.latitude, coordenadas.longitude);
-        geocoder.geocode( { 'address': address}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                posicion = results[0].geometry.location;
-                //console.log(posicion);
-
-                directionsService.route({
-                    origin: posicion,
-                    destination: ipartek,
-                    travelMode: google.maps.TravelMode.TRANSIT
-                }, function(response, status) {
-                    if (status === google.maps.DirectionsStatus.OK) {
-                        directionsDisplay.setDirections(response);
-                    } else {
-                        window.alert('Directions request failed due to ' + status);
-                    }
-                });
-            } else {
-                alert("Geocode was not successful for the following reason: " + status);
-            }
-        });
-    }
-
-    getPreciseLocation()
+   /* getPreciseLocation()
         .then(cargarMapa)
         .catch(function errorHandler(error) {
             console.log(error);
         });
-
+    */
 });
+
+function cargarMapa(direccion) {
+    //console.log("Coordenadas: " + coordenadas);
+    var directionsService = new google.maps.DirectionsService;
+    var directionsDisplay = new google.maps.DirectionsRenderer;
+    var ipartek = new google.maps.LatLng(43.256398, -2.913550);
+    var geocoder = new google.maps.Geocoder();
+
+    var element = document.getElementById('map');
+    var mapOptions = {
+        center: ipartek,
+        zoom: 16,
+        scrollwheel: true,
+        mapTypeId: google.maps.MapTypeId.HYBRID
+    };
+
+    var map = new google.maps.Map(element, mapOptions);
+    map.setTilt(0); // Quitar la inclinacion de 45º
+
+    // Marcador Rojo
+    /*
+     var marker = new google.maps.Marker({position: myCenter});
+     marker.setMap(map);
+     */
+
+    directionsDisplay.setMap(map);
+    directionsDisplay.setPanel(document.getElementById('right-panel'));
+
+    var posicion;
+
+    geocoder.geocode( { 'address': direccion}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            posicion = results[0].geometry.location;
+            //console.log(posicion);
+
+            directionsService.route({
+                origin: posicion,
+                destination: ipartek,
+                travelMode: google.maps.TravelMode.TRANSIT
+            }, function(response, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsDisplay.setDirections(response);
+                    location.hash = "#map";
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+        } else {
+            alert("Geocode was not successful for the following reason: " + status);
+        }
+    });
+}
