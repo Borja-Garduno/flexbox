@@ -586,6 +586,7 @@ function cargarMapa(direccion) {
                 if (status === google.maps.DirectionsStatus.OK) {
                     document.getElementById("right-panel").innerHTML = "";
                     directionsDisplay.setDirections(response);
+                    location.hash = "#alumnos";
                     location.hash = "#map";
                 } else {
                     window.alert('Directions request failed due to ' + status);
