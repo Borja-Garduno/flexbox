@@ -2,7 +2,21 @@
 $.noConflict();
 
 const URL = "http://localhost:2403/alumno";
+//const URL = "https://gestion-alumnos.firebaseio.com";
 var numAlumnos = 0;
+var arrayNotas = {
+    cero: 0,
+    uno: 0,
+    dos: 0,
+    tres: 0,
+    cuatro: 0,
+    cinco: 0,
+    seis: 0,
+    siete: 0,
+    ocho: 0,
+    nueve: 0,
+    diez: 0
+};
 
 jQuery(document).ready(function ($) {
 
@@ -45,7 +59,7 @@ jQuery(document).ready(function ($) {
     }
     setInterval(cargarHora, 0);
 
-    var promesaCarga = $.ajax('http://localhost:2403/alumno', {type: "GET"});
+    var promesaCarga = $.ajax(URL, {type: "GET"});
     promesaCarga.success(function(data) {
         numAlumnos = data.length;
 
@@ -106,6 +120,7 @@ jQuery(document).ready(function ($) {
             totalNumeroAlumnos();
         }).then(insertarAlumnoVista(codigo, dni, nombre, apellidos, fechaNacimiento, direccion, notas))
             .then(calcularMediaClase)
+            .then(drawBasic)
             .catch(function (xhr) {
                 alert("Error Insertar: " + xhr.responseText);
             });
@@ -156,6 +171,8 @@ jQuery(document).ready(function ($) {
             actualizarAlumnoVista(id, dni, nombre, apellidos, fechaNacimiento, direccion, notas);
         }).then(function () {
             calcularMediaClase();
+        }).then(function () {
+            drawBasic();
         }).catch(function (xhr) {
             alert("Error Actualizar: " + xhr.responseText);
         });
@@ -215,6 +232,55 @@ jQuery(document).ready(function ($) {
         }
 
         media = media/len;
+
+        // Calculo de las medias para las Estadisticas
+        var aux = Math.floor(media);
+        switch (aux){
+            case 0:
+                arrayNotas.cero++;
+                break;
+
+            case 1:
+                arrayNotas.uno++;
+                break;
+
+            case 2:
+                arrayNotas.dos++;
+                break;
+
+            case 3:
+                arrayNotas.tres++;
+                break;
+
+            case 4:
+                arrayNotas.cuatro++;
+                break;
+
+            case 5:
+                arrayNotas.cinco++;
+                break;
+
+            case 6:
+                arrayNotas.seis++;
+                break;
+
+            case 7:
+                arrayNotas.siete++;
+                break;
+
+            case 8:
+                arrayNotas.ocho++;
+                break;
+
+            case 9:
+                arrayNotas.nueve++;
+                break;
+
+            case 10:
+                arrayNotas.diez++;
+                break;
+        }
+
         return media;
     }
 
@@ -420,6 +486,8 @@ jQuery(document).ready(function ($) {
                 borrarAlumnoVista();
             }).then(function () {
                 calcularMediaClase();
+            }).then(function () {
+                drawBasic();
             }).catch(function (xhr) {
                 alert("Error Insertar: " + xhr.responseText);
             });
@@ -642,45 +710,31 @@ function cargarMapa(direccion, modo) {
     });
 }
 
-google.charts.load('current', {packages: ['corechart', 'bar']});
-google.charts.setOnLoadCallback(drawMultSeries);
+google.charts.load('current', {packages: ['corechart']});
+google.charts.setOnLoadCallback(drawBasic);
 
-function drawMultSeries() {
-    var data = new google.visualization.DataTable();
-    data.addColumn('timeofday', 'Notas Alumnos');
-    data.addColumn('number', '0');
-    data.addColumn('number', '1');
-
-    data.addRows([
-        [{v: [8, 0, 0], f: '8 am'}, 1, .25],
-        [{v: [9, 0, 0], f: '9 am'}, 2, .5],
-        [{v: [10, 0, 0], f:'10 am'}, 3, 1],
-        [{v: [11, 0, 0], f: '11 am'}, 4, 2.25],
-        [{v: [12, 0, 0], f: '12 pm'}, 5, 2.25],
-        [{v: [13, 0, 0], f: '1 pm'}, 6, 3],
-        [{v: [14, 0, 0], f: '2 pm'}, 7, 4],
-        [{v: [15, 0, 0], f: '3 pm'}, 8, 5.25],
-        [{v: [16, 0, 0], f: '4 pm'}, 9, 7.5],
-        [{v: [17, 0, 0], f: '5 pm'}, 10, 10],
+function drawBasic() {
+    var data = google.visualization.arrayToDataTable([
+        ['Notas', 'Estadisticas Notas'],
+        ['0',  arrayNotas.cero],
+        ['1',  arrayNotas.uno],
+        ['2',  arrayNotas.dos],
+        ['3',  arrayNotas.tres],
+        ['4',  arrayNotas.cuatro],
+        ['5',  arrayNotas.cinco],
+        ['6',  arrayNotas.seis],
+        ['7',  arrayNotas.siete],
+        ['8',  arrayNotas.ocho],
+        ['9',  arrayNotas.nueve],
+        ['10', arrayNotas.diez]
     ]);
 
     var options = {
-        title: 'Estadisticas de las Notas de los Alumnos',
-        hAxis: {
-            title: 'Notas Alumnos',
-            format: 'h:mm a',
-            viewWindow: {
-                min: [7, 30, 0],
-                max: [17, 30, 0]
-            }
-        },
-        vAxis: {
-            title: 'Estadisticas (escala 1-10)'
-        }
+        title: 'Estadisticas Notas Alumnos',
+        hAxis: {title: 'Notas',  titleTextStyle: {color: '#333'}},
+        vAxis: {minValue: 0}
     };
 
-    var chart = new google.visualization.ColumnChart(
-        document.getElementById('chart_div'));
-
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
     chart.draw(data, options);
 }
