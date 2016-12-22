@@ -1,8 +1,11 @@
 
 $.noConflict();
 
+// DESARROLLO
 const URL = "http://localhost:2403/alumno";
-//const URL = "https://gestion-alumnos.firebaseio.com";
+
+// PRODUCCION
+//const URL = "https://gestion-alumnos.firebaseio.com/.json";
 var numAlumnos = 0;
 var arrayNotas = {
     cero: 0,
@@ -95,6 +98,18 @@ jQuery(document).ready(function ($) {
             "<td colspan='12'>Nota Media:</td>" +
             "<td colspan='2'></td>" +
             "</tr>";
+            /*
+            "<tr>" +
+                "<td>"+
+                    "<nav aria-label='...'>" +
+                        "<ul class='pagination'>" +
+                            "<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>" +
+                            "<li class='active'><a href='#'>1 <span class='sr-only'>(current)</span></a></li>"+
+                        "</ul>" +
+                    "</nav>"+
+                "</td>"+
+            "</tr>";
+            */
 
         $("#listado-alumnos tfoot").append(html_text);
 
