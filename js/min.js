@@ -6,6 +6,7 @@ const URL = "http://localhost:2403/alumno";
 
 // PRODUCCION
 //const URL = "https://gestion-alumnos.firebaseio.com/.json";
+
 var numAlumnos = 0;
 var arrayNotas = {
     cero: 0,
@@ -225,6 +226,34 @@ jQuery(document).ready(function ($) {
         $input.parent().parent().removeClass('fila').addClass('nueva_fila').html(html_text);
     }
 
+    function getByDNI(dniIN) {
+        var encontrado = false;
+
+        ajax({url:URL,type:"GET"})
+            .then(function (data) {
+                for(var i=0; i<data.length; i++){
+                    var id = data[i].id;
+                    var dni = data[i].dni;
+                    var nombre =  data[i].nombre;
+                    var apellidos = data[i].apellidos;
+                    var fechaNacimiento = data[i].fechaNacimiento;
+                    var direccion = data[i].direccion;
+                    var notas = {};
+
+                    if(dniIN == dni){
+                        encontrado = true;
+                    }
+                }
+            })
+            .then(function () {
+                console.log("Resultado 1: " + encontrado);
+                return encontrado;
+            })
+            .catch(function(error){
+                console.log(error);
+            });
+    }
+
     function totalNumeroAlumnos() {
         //$("#alumnos div span.totalAlumnos").text("Total Alumnos: " + dnies.length);
         //$("#alumnos div span:eq(0)").append(" " + dnies.length);
@@ -401,9 +430,20 @@ jQuery(document).ready(function ($) {
         var UF1846 = parseInt($("#myModal #nUF1846").val()) || '';
 
         if(!validarDNI(dni)){
-            alert("Atencion! DNI no valido.")
+            alert("Atencion! DNI no valido.");
             valido=false;
         }
+
+        /*
+        var encontrado = getByDNI(dni);
+        console.log("Resultado 2: " + encontrado);
+
+        if(encontrado){
+            alert("Atencion! Ese DNI ya existe.");
+            valido=false;
+            console.log("Resultado 3: " + encontrado);
+        }
+        */
 
         if(!validarTexto(nombre, 3)){
             alert("Atencion! Nombre no valido. Longitud minima 3.");
